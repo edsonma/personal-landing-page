@@ -616,6 +616,18 @@ footer {
 
 footer .surname { color: var(--purple-glow); }
 
+.footer-stack {
+  margin-top: 10px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.footer-stack strong {
+  color: var(--purple-glow);
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(179,157,255,0.5);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .btn, .project-card { transition: none; }
@@ -1006,6 +1018,7 @@ footer .surname { color: var(--purple-glow); }
 
 <footer>
   made by <span class="surname">马</span> edson ma · brasília, brazil
+  <div class="footer-stack">powered by <strong>Julia Lang</strong> &amp; <strong>Genie.jl</strong></div>
 </footer>
 <script>
 (function () {
