@@ -19,12 +19,14 @@ auto_start_machines = true
 min_machines_running = 1
 
 [[http_service.checks]]
-# Give Julia real time to finish booting before the first check —
-# cold boot (using Genie + JIT-ing routes) commonly takes 60-90s even
-# with packages precompiled at build time. This is a known Genie.jl +
-# fly.io pain point; too-short grace periods cause the exact
-# "instance refused connection" error fly's proxy raises.
-grace_period = "120s"
+# Confirmed via manual `julia app.jl` inside the running machine:
+# the cold `using Genie` compile genuinely takes several minutes on
+# a shared vCPU (load average ~0.7 sustained, not a hang — real JIT
+# work). 120s was nowhere near enough. This only hurts the very
+# first boot after a deploy; with min_machines_running = 1 below,
+# it stays warm after that, so this cost is paid once per deploy,
+# not per request.
+grace_period = "300s"
 interval = "30s"
 method = "GET"
 path = "/healthz"
