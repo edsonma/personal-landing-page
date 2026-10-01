@@ -3,11 +3,6 @@ using Genie.Router
 using Genie.Renderer
 
 # Serve the static landing page at the root route.
-# The file lives in public/index.html, and Genie's static
-# file server already exposes everything under public/ —
-# this route just makes "/" explicit and gives us a place
-# to hook in Julia-powered endpoints later (e.g. a live
-# LightGraphs.jl render of the stack graph).
 route("/") do
   Genie.Renderer.WebRenderable(
     read(joinpath(@__DIR__, "public", "index.html"), String),
@@ -24,5 +19,11 @@ end
 Genie.config.run_as_server = true
 Genie.config.server_host = "0.0.0.0"
 Genie.config.server_port = parse(Int, get(ENV, "PORT", "8000"))
+Genie.config.websockets_port = Genie.config.server_port
 
-up(Genie.config.server_port, "0.0.0.0"; async = false)
+# Print exactly what we're about to bind to — this is what fly's
+# error hint ("look at your startup logs") is asking you to check.
+println("Starting Genie on host=$(Genie.config.server_host) port=$(Genie.config.server_port)")
+flush(stdout)
+
+up(Genie.config.server_port, Genie.config.server_host; async = false, verbose = true)
