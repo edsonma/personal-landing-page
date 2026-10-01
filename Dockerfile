@@ -3,18 +3,24 @@ FROM julia:1.10-bookworm
 
 WORKDIR /app
 
-# Set the depot path BEFORE installing anything, so the package
-# install (next step) and the runtime CMD agree on where packages
-# live. Setting this after Pkg.instantiate() was a bug — Genie
-# would get installed into the default depot, then the runtime
-# ENV override pointed Julia at a different, empty directory,
-# causing "Package Genie ... does not seem to be installed".
+# Set the depot path before installing anything, so the package
+# install and runtime agree on where packages live.
 ENV JULIA_DEPOT_PATH=/usr/local/share/julia
 
 # Copy only the manifest files first so Julia's package
 # install layer is cached unless dependencies change.
 COPY Project.toml ./
-RUN julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+RUN julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.add("PackageCompiler"); Pkg.precompile()'
+
+# Bake Genie into a custom sysimage. This is the real fix for slow
+# cold boots on fly.io: without it, every container start pays
+# Julia's full "using Genie" JIT cost from scratch (often 60-120s+),
+# which was timing out fly's proxy before the app ever got to
+# listening. This step takes a few extra minutes at build time —
+# that's a one-time cost, not something fly.io's health check
+# has to wait through on every boot.
+COPY create_sysimage.jl ./
+RUN julia --project=. create_sysimage.jl
 
 # Now copy the rest of the app
 COPY . .
@@ -26,4 +32,6 @@ ENV GENIE_HOST=0.0.0.0
 
 EXPOSE 8000
 
-CMD ["julia", "--project=.", "app.jl"]
+# Boot using the precompiled sysimage instead of plain `julia`,
+# so Genie is already loaded in memory at process start.
+CMD ["julia", "--project=.", "--sysimage=/app/GenieSysimage.so", "app.jl"]
