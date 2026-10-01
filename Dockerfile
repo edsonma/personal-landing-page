@@ -3,6 +3,12 @@ FROM julia:1.10-bookworm
 
 WORKDIR /app
 
+# PackageCompiler needs a C compiler on PATH to link the sysimage —
+# the base julia image doesn't ship one.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc && \
+    rm -rf /var/lib/apt/lists/*
+
 # Set the depot path before installing anything, so the package
 # install and runtime agree on where packages live.
 ENV JULIA_DEPOT_PATH=/usr/local/share/julia
