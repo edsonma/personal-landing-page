@@ -1,0 +1,11 @@
+name = "PersonalLandingPage"
+uuid = "7b8f1e2a-1a2b-4c3d-9e0f-1a2b3c4d5e6f"
+authors = ["Edson Ma"]
+version = "0.1.0"
+
+[deps]
+Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+
+[compat]
+julia = "1.9"
+Genie = "5"
