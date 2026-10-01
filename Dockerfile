@@ -1,4 +1,6 @@
-# Julia + Genie.jl, built for fly.io
+# Julia + Genie.jl — works on fly.io or Railway (sysimage build included
+# for fast cold boots; Railway's healthcheckTimeout in railway.json
+# already gives it plenty of room on the very first deploy)
 FROM julia:1.10-bookworm
 
 WORKDIR /app

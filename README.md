@@ -14,8 +14,9 @@ personal-landing-page/
 │   └── env/prod.jl         # Production server config
 ├── public/
 │   └── index.html          # The landing page itself (static HTML/CSS/JS)
-├── Dockerfile               # Builds the Julia + Genie image
+├── Dockerfile               # Builds the Julia + Genie image (with a baked sysimage for fast boots)
 ├── fly.toml                 # fly.io app configuration
+├── railway.json              # Railway app configuration
 ├── .dockerignore
 └── .gitignore
 ```
@@ -60,6 +61,17 @@ Then open http://localhost:8000.
    ```
 
 Future deploys are just `fly deploy` again after pushing changes.
+
+## Deploy to Railway
+
+1. Go to [railway.app](https://railway.app) and sign in with GitHub.
+2. **New Project → Deploy from GitHub repo** → select `edsonma/personal-landing-page`.
+3. Railway auto-detects the `Dockerfile` and reads `railway.json` for health check
+   settings — no manual config needed.
+4. First deploy will take a few minutes (the sysimage build step), then Railway
+   gives you a public URL automatically under **Settings → Networking → Generate Domain**.
+
+Every push to `main` auto-deploys from then on — no CLI required.
 
 ## Adding real Julia functionality
 
