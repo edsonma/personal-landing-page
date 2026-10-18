@@ -42,4 +42,4 @@ EXPOSE 8000
 # Boot using the precompiled sysimage instead of plain `julia`,
 # so Genie is already loaded in memory at process start — this is
 # what gets us under fly's deploy-readiness timeout.
-CMD ["julia", "--project=.", "--sysimage=/app/GenieSysimage.so", "app.jl"]
+CMD ["julia", "--project=.", "--sysimage=/app/GenieSysimage.so", "--heap-size-hint=256M", "app.jl"]

@@ -2,12 +2,14 @@ using Genie
 using Genie.Router
 using Genie.Renderer
 
+# Read the landing page once at startup instead of on every request —
+# avoids allocating a fresh ~100 KB string per hit, which keeps the GC
+# from letting the heap balloon.
+const INDEX_HTML = read(joinpath(@__DIR__, "public", "index.html"), String)
+
 # Serve the static landing page at the root route.
 route("/") do
-  Genie.Renderer.WebRenderable(
-    read(joinpath(@__DIR__, "public", "index.html"), String),
-    :html
-  ) |> Genie.Renderer.respond
+  Genie.Renderer.WebRenderable(INDEX_HTML, :html) |> Genie.Renderer.respond
 end
 
 # Simple healthcheck endpoint — fly.io pings this to confirm
@@ -26,4 +28,4 @@ Genie.config.websockets_port = Genie.config.server_port
 println("Starting Genie on host=$(Genie.config.server_host) port=$(Genie.config.server_port)")
 flush(stdout)
 
-up(Genie.config.server_port, Genie.config.server_host; async = false, verbose = true)
+up(Genie.config.server_port, Genie.config.server_host; async = false)
