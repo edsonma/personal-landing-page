@@ -501,13 +501,15 @@ section { padding: 70px 0; border-top: 1px solid var(--card-border); }
 .project-thumb {
   display: block;
   width: 100%;
+  max-width: 240px;
+  height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border: 2px solid var(--card-border);
   image-rendering: auto;
 }
 
-.project-thumb.wide { aspect-ratio: auto; }
+.project-thumb.wide { aspect-ratio: auto; max-width: 300px; }
 
 .project-card h3 {
   font-family: 'Press Start 2P', monospace;
