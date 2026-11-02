@@ -53,6 +53,18 @@ Genie.config.websockets_port = Genie.config.server_port
 
 # Print exactly what we're about to bind to — this is what fly's
 # error hint ("look at your startup logs") is asking you to check.
+# Julia's GC rarely hands memory back to the OS on its own. Every few minutes,
+# run a full GC and ask glibc to release free pages, so the idle footprint
+# stays near the baseline instead of ratcheting up after traffic bursts.
+@async while true
+  sleep(300)
+  try
+    GC.gc(true)
+    ccall(:malloc_trim, Cint, (Cint,), 0)
+  catch
+  end
+end
+
 println("Starting Genie on host=$(Genie.config.server_host) port=$(Genie.config.server_port)")
 flush(stdout)
 

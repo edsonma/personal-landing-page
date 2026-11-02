@@ -36,6 +36,12 @@ COPY . .
 RUN gzip -9 -k -f public/index.html
 
 ENV GENIE_ENV=prod
+# Memory tuning for a tiny single-purpose server: one Julia thread, fewer glibc
+# malloc arenas (the default is 8x cores and fragments badly), and return freed
+# pages to the OS sooner.
+ENV JULIA_NUM_THREADS=1
+ENV MALLOC_ARENA_MAX=2
+ENV MALLOC_TRIM_THRESHOLD_=131072
 ENV PORT=8000
 ENV HOST=0.0.0.0
 ENV GENIE_HOST=0.0.0.0
@@ -45,4 +51,4 @@ EXPOSE 8000
 # Boot using the precompiled sysimage instead of plain `julia`,
 # so Genie is already loaded in memory at process start — this is
 # what gets us under fly's deploy-readiness timeout.
-CMD ["julia", "--project=.", "--sysimage=/app/GenieSysimage.so", "--heap-size-hint=256M", "app.jl"]
+CMD ["julia", "--project=.", "--sysimage=/app/GenieSysimage.so", "--heap-size-hint=128M", "--gcthreads=1", "app.jl"]
