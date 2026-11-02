@@ -32,6 +32,9 @@ RUN julia --project=. create_sysimage.jl
 # Now copy the rest of the app
 COPY . .
 
+# Pre-compress the landing page; app.jl serves it to gzip-capable clients.
+RUN gzip -9 -k -f public/index.html
+
 ENV GENIE_ENV=prod
 ENV PORT=8000
 ENV HOST=0.0.0.0
