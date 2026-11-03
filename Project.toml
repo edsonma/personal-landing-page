@@ -1,5 +1,5 @@
 [deps]
-HTTP = "cd4c43a9-7502-52ba-aa6d-59fb2a88a1d1"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 
 [compat]
 julia = "1.9"
