@@ -60,8 +60,9 @@ function handler(req::HTTP.Request)
   asset === nothing && return HTTP.Response(404, "not found")
 
   if asset.gz !== nothing && accepts_gzip(req)
-    return HTTP.Response(200,
-      [asset.headers; "Content-Encoding" => "gzip", "Vary" => "Accept-Encoding"], asset.gz)
+    gzip_headers = vcat(asset.headers,
+      ["Content-Encoding" => "gzip", "Vary" => "Accept-Encoding"])
+    return HTTP.Response(200, gzip_headers, asset.gz)
   end
   return HTTP.Response(200, asset.headers, asset.body)
 end
