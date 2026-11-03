@@ -1,6 +1,6 @@
 [deps]
-Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+HTTP = "cd4c43a9-7502-52ba-aa6d-59fb2a88a1d1"
 
 [compat]
 julia = "1.9"
-Genie = "5"
+HTTP = "1"

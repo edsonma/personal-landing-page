@@ -1,4 +1,4 @@
-# Julia + Genie.jl — works on fly.io or Railway (sysimage build included
+# Julia + HTTP.jl — works on fly.io or Railway (sysimage build included
 # for fast cold boots; Railway's healthcheckTimeout in railway.json
 # already gives it plenty of room on the very first deploy)
 FROM julia:1.10-bookworm
@@ -22,7 +22,7 @@ ENV JULIA_DEPOT_PATH=/usr/local/share/julia
 COPY Project.toml ./
 RUN julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.add("PackageCompiler"); Pkg.precompile()'
 
-# Bake Genie into a custom sysimage so runtime boot is fast (seconds,
+# Bake HTTP.jl into a custom sysimage so runtime boot is fast (seconds,
 # not minutes). This build step itself takes several minutes — that's
 # a one-time cost at build time, not something fly's deploy-readiness
 # timeout has to wait through on every boot.
@@ -35,7 +35,6 @@ COPY . .
 # Pre-compress the landing page; app.jl serves it to gzip-capable clients.
 RUN gzip -9 -k -f public/index.html
 
-ENV GENIE_ENV=prod
 # Memory tuning for a tiny single-purpose server: one Julia thread, fewer glibc
 # malloc arenas (the default is 8x cores and fragments badly), and return freed
 # pages to the OS sooner.
@@ -44,11 +43,10 @@ ENV MALLOC_ARENA_MAX=2
 ENV MALLOC_TRIM_THRESHOLD_=131072
 ENV PORT=8000
 ENV HOST=0.0.0.0
-ENV GENIE_HOST=0.0.0.0
 
 EXPOSE 8000
 
 # Boot using the precompiled sysimage instead of plain `julia`,
-# so Genie is already loaded in memory at process start — this is
+# so HTTP.jl is already loaded in memory at process start — this is
 # what gets us under fly's deploy-readiness timeout.
-CMD ["julia", "--project=.", "--sysimage=/app/GenieSysimage.so", "--heap-size-hint=128M", "--gcthreads=1", "app.jl"]
+CMD ["julia", "--project=.", "--sysimage=/app/AppSysimage.so", "--heap-size-hint=128M", "--gcthreads=1", "app.jl"]

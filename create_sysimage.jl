@@ -1,13 +1,10 @@
-# Bakes Genie (and its full dependency tree) into a custom sysimage.
-# Confirmed via manual boot testing that plain `using Genie` takes
-# several minutes of real CPU-bound compilation on a shared vCPU —
-# this is what actually fixes that, by doing the compilation once
-# at build time instead of on every cold boot.
+# Bakes HTTP.jl (and its dependency tree) into a custom sysimage, so the
+# server boots in seconds instead of compiling on every cold start.
 using PackageCompiler
 
 create_sysimage(
-    ["Genie"];
-    sysimage_path = "GenieSysimage.so",
+    ["HTTP"];
+    sysimage_path = "AppSysimage.so",
     project = ".",
     # IMPORTANT: build and runtime containers can land on different
     # physical CPUs on cloud platforms (seen on Railway: sysimage

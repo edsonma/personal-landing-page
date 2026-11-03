@@ -1,58 +1,71 @@
-using Genie
-using Genie.Router
-using Genie.Renderer
+using HTTP
 
-# Read the landing page once at startup instead of on every request —
-# avoids allocating a fresh string per hit, which keeps the GC from
-# letting the heap balloon.
-const INDEX_PATH = joinpath(@__DIR__, "public", "index.html")
-const INDEX_HTML = read(INDEX_PATH, String)
+# Everything in public/ is read into memory once at startup (it is ~100 KB),
+# so requests never touch the disk or allocate fresh buffers.
+const PUBLIC = joinpath(@__DIR__, "public")
+const PORT = parse(Int, get(ENV, "PORT", "8000"))
 
-# The Dockerfile pre-compresses the page (index.html.gz) at build time, which
-# cuts egress by ~75%. If the .gz is missing (local dev) we serve plain HTML.
-const INDEX_GZ = isfile(INDEX_PATH * ".gz") ? read(INDEX_PATH * ".gz") : nothing
+const CONTENT_TYPES = Dict(
+  ".html" => "text/html; charset=utf-8",
+  ".jpg"  => "image/jpeg",
+  ".jpeg" => "image/jpeg",
+  ".png"  => "image/png",
+  ".svg"  => "image/svg+xml",
+  ".ico"  => "image/x-icon",
+  ".css"  => "text/css; charset=utf-8",
+  ".js"   => "text/javascript; charset=utf-8",
+  ".txt"  => "text/plain; charset=utf-8",
+)
 
-accepts_gzip() = try
-  occursin("gzip", lowercase(string(Genie.Router.params(:REQUEST).headers)))
-catch
-  false
+struct Asset
+  body::Vector{UInt8}
+  gz::Union{Nothing,Vector{UInt8}}   # pre-compressed copy, if the build made one
+  headers::Vector{Pair{String,String}}
 end
 
-# Serve the static landing page at the root route.
-route("/") do
-  if INDEX_GZ !== nothing && accepts_gzip()
-    try
-      return Genie.Renderer.WebRenderable(INDEX_GZ, :html, 200,
-        Dict("Content-Encoding" => "gzip", "Vary" => "Accept-Encoding",
-             "Cache-Control" => "public, max-age=300")) |> Genie.Renderer.respond
-    catch e
-      @warn "gzip response failed, falling back to plain HTML" exception = e
-    end
+function load_assets()
+  assets = Dict{String,Asset}()
+  for (dir, _, files) in walkdir(PUBLIC), f in files
+    endswith(f, ".gz") && continue
+    path = joinpath(dir, f)
+    url = "/" * replace(relpath(path, PUBLIC), '\\' => '/')
+    ext = lowercase(splitext(f)[2])
+    isimage = startswith(get(CONTENT_TYPES, ext, ""), "image/")
+    headers = [
+      "Content-Type" => get(CONTENT_TYPES, ext, "application/octet-stream"),
+      "X-Content-Type-Options" => "nosniff",
+      # Images never change under the same name: cache for a year.
+      # The page itself is cached briefly so edits show up quickly.
+      "Cache-Control" => isimage ? "public, max-age=31536000, immutable" : "public, max-age=300",
+    ]
+    gz = isfile(path * ".gz") ? read(path * ".gz") : nothing
+    asset = Asset(read(path), gz, headers)
+    assets[url] = asset
+    url == "/index.html" && (assets["/"] = asset)
   end
-  Genie.Renderer.WebRenderable(INDEX_HTML, :html) |> Genie.Renderer.respond
+  assets
 end
 
-# Simple healthcheck endpoint — fly.io pings this to confirm
-# the app booted correctly.
-route("/healthz") do
-  "ok"
+const ASSETS = load_assets()
+
+accepts_gzip(req) = occursin("gzip", HTTP.header(req, "Accept-Encoding"))
+
+function handler(req::HTTP.Request)
+  path = HTTP.URI(req.target).path
+  path == "/healthz" && return HTTP.Response(200, "ok")
+
+  req.method in ("GET", "HEAD") || return HTTP.Response(405, ["Allow" => "GET, HEAD"], "method not allowed")
+
+  asset = get(ASSETS, path, nothing)
+  asset === nothing && return HTTP.Response(404, "not found")
+
+  if asset.gz !== nothing && accepts_gzip(req)
+    return HTTP.Response(200,
+      [asset.headers; "Content-Encoding" => "gzip", "Vary" => "Accept-Encoding"], asset.gz)
+  end
+  return HTTP.Response(200, asset.headers, asset.body)
 end
 
-# Thumbnails in public/img/ are served by Genie's static file handler;
-# let browsers cache them for a year instead of re-downloading each visit.
-try
-  Genie.config.cache_duration = 31536000
-catch e
-  @warn "could not set cache_duration" exception = e
-end
-
-Genie.config.run_as_server = true
-Genie.config.server_host = "0.0.0.0"
-Genie.config.server_port = parse(Int, get(ENV, "PORT", "8000"))
-Genie.config.websockets_port = Genie.config.server_port
-
-# Print exactly what we're about to bind to — this is what fly's
-# error hint ("look at your startup logs") is asking you to check.
 # Julia's GC rarely hands memory back to the OS on its own. Every few minutes,
 # run a full GC and ask glibc to release free pages, so the idle footprint
 # stays near the baseline instead of ratcheting up after traffic bursts.
@@ -65,7 +78,7 @@ Genie.config.websockets_port = Genie.config.server_port
   end
 end
 
-println("Starting Genie on host=$(Genie.config.server_host) port=$(Genie.config.server_port)")
+println("Starting HTTP.jl on 0.0.0.0:$PORT with $(length(ASSETS)) assets")
 flush(stdout)
 
-up(Genie.config.server_port, Genie.config.server_host; async = false)
+HTTP.serve(handler, "0.0.0.0", PORT)

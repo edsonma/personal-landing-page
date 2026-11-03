@@ -1,7 +1,7 @@
-# Heavy, rarely-changing layer: Julia + Genie + a PackageCompiler sysimage.
+# Heavy, rarely-changing layer: Julia + HTTP.jl + a PackageCompiler sysimage.
 # Built by GitHub Actions (.github/workflows/base-image.yml) and published to
 # ghcr.io/edsonma/personal-landing-page-base, so app deploys on Railway only
-# copy the page on top of it instead of recompiling Genie every time.
+# copy the page on top of it instead of recompiling every time.
 FROM julia:1.10-bookworm
 
 WORKDIR /app

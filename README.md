@@ -1,6 +1,6 @@
 # edsonma — Personal Landing Page
 
-An 8-bit themed personal landing page, served through a [Genie.jl](https://genieframework.com/)
+An 8-bit themed personal landing page, served through a [HTTP.jl](https://github.com/JuliaWeb/HTTP.jl)
 app so it can live alongside future Julia-powered demos (e.g. a live
 LightGraphs.jl render of the stack graph) on the same deployment.
 
@@ -8,13 +8,13 @@ LightGraphs.jl render of the stack graph) on the same deployment.
 
 ```
 personal-landing-page/
-├── app.jl                 # Genie app entry point — serves public/index.html at "/"
-├── Project.toml            # Julia package manifest (Genie dependency)
+├── app.jl                 # HTTP.jl server — serves everything in public/ from memory
+├── Project.toml            # Julia package manifest (HTTP dependency)
 ├── config/
 │   └── env/prod.jl         # Production server config
 ├── public/
 │   └── index.html          # The landing page itself (static HTML/CSS/JS)
-├── Dockerfile               # Builds the Julia + Genie image (with a baked sysimage for fast boots)
+├── Dockerfile               # Builds the Julia + HTTP.jl image (with a baked sysimage for fast boots)
 ├── fly.toml                 # fly.io app configuration
 ├── railway.json              # Railway app configuration
 ├── .dockerignore
