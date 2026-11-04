@@ -4,3 +4,5 @@ README.md
 build/
 log/
 *.md
+.github
+Dockerfile.base

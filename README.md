@@ -1,85 +1,44 @@
-# edsonma — Personal Landing Page
+# personal-landing-page
 
-An 8-bit themed personal landing page, served through a [HTTP.jl](https://github.com/JuliaWeb/HTTP.jl)
-app so it can live alongside future Julia-powered demos (e.g. a live
-LightGraphs.jl render of the stack graph) on the same deployment.
+An 8-bit themed personal landing page for Edson Ma, served by a small
+[HTTP.jl](https://github.com/JuliaWeb/HTTP.jl) server and deployed on Railway
+at <https://edsonma.cc>.
 
-## Project structure
+## Layout
 
 ```
-personal-landing-page/
-├── app.jl                 # HTTP.jl server — serves everything in public/ from memory
-├── Project.toml            # Julia package manifest (HTTP dependency)
-├── config/
-│   └── env/prod.jl         # Production server config
-├── public/
-│   └── index.html          # The landing page itself (static HTML/CSS/JS)
-├── Dockerfile               # Builds the Julia + HTTP.jl image (with a baked sysimage for fast boots)
-├── fly.toml                 # fly.io app configuration
-├── railway.json              # Railway app configuration
-├── .dockerignore
-└── .gitignore
+├── app.jl               # HTTP.jl server: serves public/ from memory, security headers, gzip
+├── Project.toml         # Julia deps (HTTP)
+├── create_sysimage.jl   # PackageCompiler script (bakes HTTP.jl for fast boots)
+├── Dockerfile           # Runtime image (runs as a non-root user)
+├── Dockerfile.base      # Heavy layer: Julia + sysimage, built by GitHub Actions
+├── railway.json         # Railway build/deploy settings (healthcheck: /healthz)
+└── public/
+    ├── index.html       # The landing page (single file)
+    ├── robots.txt
+    └── img/             # Project thumbnails (cached for a year)
 ```
 
 ## Run locally
 
-Requires Julia 1.9+.
-
-```bash
+```fish
 julia --project=. -e 'using Pkg; Pkg.instantiate()'
 julia --project=. app.jl
 ```
 
-Then open http://localhost:8000.
+Then open <http://localhost:8000>. Set `PORT` to change the port.
 
-## Deploy to fly.io
+## Deploy
 
-1. Install the [flyctl CLI](https://fly.io/docs/flyctl/install/) if you haven't:
-   ```bash
-   curl -L https://fly.io/install.sh | sh
-   ```
+Railway builds the `Dockerfile` on every push to `main`. The page is
+pre-gzipped at build time and every response carries a strict
+Content-Security-Policy and other security headers (see `app.jl`).
 
-2. Log in:
-   ```bash
-   fly auth login
-   ```
+Optional: `.github/workflows/base-image.yml` publishes the Julia + sysimage
+layer to `ghcr.io/edsonma/personal-landing-page-base`. Pointing the Dockerfile's
+`FROM` at it makes deploys take seconds instead of minutes.
 
-3. Launch the app (first time only — this reads `fly.toml` and asks to confirm):
-   ```bash
-   fly launch --no-deploy
-   ```
-   Keep the existing `fly.toml` when prompted, or adjust `app` name / region as needed.
+## Adding images
 
-4. Deploy:
-   ```bash
-   fly deploy
-   ```
-
-5. Open it:
-   ```bash
-   fly open
-   ```
-
-Future deploys are just `fly deploy` again after pushing changes.
-
-## Deploy to Railway
-
-1. Go to [railway.app](https://railway.app) and sign in with GitHub.
-2. **New Project → Deploy from GitHub repo** → select `edsonma/personal-landing-page`.
-3. Railway auto-detects the `Dockerfile` and reads `railway.json` for health check
-   settings — no manual config needed.
-4. First deploy will take a few minutes (the sysimage build step), then Railway
-   gives you a public URL automatically under **Settings → Networking → Generate Domain**.
-
-Every push to `main` auto-deploys from then on — no CLI required.
-
-## Adding real Julia functionality
-
-`app.jl` already has a `/healthz` route fly.io uses for health checks. To add a
-Julia-powered endpoint — for example, generating the stack graph live with
-`LightGraphs.jl` instead of the hand-authored SVG — add a new `route(...)` block
-in `app.jl` and add the package to `Project.toml`.
-
-## License
-
-Personal project — all rights reserved by Edson Ma.
+Put files in `public/img/` and reference them as `/img/name.jpg`. Keep them
+small (a few KB to tens of KB): every visitor downloads them.

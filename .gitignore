@@ -7,13 +7,5 @@ Manifest.toml
 /docs/build/
 /docs/site/
 
-# Genie
-build/
-log/
-db/
-
-# fly.io
-fly.toml.bak
-
 # OS
 .DS_Store

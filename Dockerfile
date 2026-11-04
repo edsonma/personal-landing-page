@@ -1,6 +1,4 @@
-# Julia + HTTP.jl — works on fly.io or Railway (sysimage build included
-# for fast cold boots; Railway's healthcheckTimeout in railway.json
-# already gives it plenty of room on the very first deploy)
+# Julia + HTTP.jl on Railway (sysimage baked in for fast cold boots)
 FROM julia:1.10-bookworm
 
 WORKDIR /app
@@ -24,8 +22,7 @@ RUN julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.add("PackageCompiler
 
 # Bake HTTP.jl into a custom sysimage so runtime boot is fast (seconds,
 # not minutes). This build step itself takes several minutes — that's
-# a one-time cost at build time, not something fly's deploy-readiness
-# timeout has to wait through on every boot.
+# a one-time cost at build time, not paid on every boot.
 COPY create_sysimage.jl ./
 RUN julia --project=. create_sysimage.jl
 
@@ -43,10 +40,15 @@ ENV MALLOC_ARENA_MAX=2
 ENV MALLOC_TRIM_THRESHOLD_=131072
 ENV PORT=8000
 ENV HOST=0.0.0.0
+ENV HOME=/tmp
 
 EXPOSE 8000
 
+# Run as an unprivileged user: the app only reads /app and the Julia depot.
+RUN useradd --system --no-create-home --uid 10001 app
+USER app
+
 # Boot using the precompiled sysimage instead of plain `julia`,
 # so HTTP.jl is already loaded in memory at process start — this is
-# what gets us under fly's deploy-readiness timeout.
+# what keeps cold starts to a few seconds.
 CMD ["julia", "--project=.", "--sysimage=/app/AppSysimage.so", "--heap-size-hint=128M", "--gcthreads=1", "app.jl"]
