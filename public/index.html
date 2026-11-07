@@ -807,7 +807,8 @@ html.booting .boot {
 .boot-inner { width: min(560px, 90vw); position: relative; }
 .boot-sprite { position: absolute; right: 0; top: 0; width: 54px; height: 54px; shape-rendering: crispEdges; }
 .boot-sprite .g-body { fill: var(--neon-pink); }
-.boot-sprite .g-eye { fill: var(--neon-cyan); }
+.boot-sprite .g-eye { fill: var(--neon-cyan); animation: eye-blink 2s steps(1) infinite; }
+@keyframes eye-blink { 0% { opacity: 1; } 80% { opacity: 0; } 88% { opacity: 1; } }
 .boot-log { min-height: 15em; white-space: pre-wrap; text-shadow: 0 0 6px rgba(77,232,255,0.6); }
 .boot-log .hi { color: var(--neon-pink); }
 .boot-bar { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 14px 0 6px; border: 2px solid var(--neon-cyan); padding: 3px; }
@@ -830,7 +831,7 @@ html.booting .boot {
 @keyframes boot-failsafe { to { visibility: hidden; pointer-events: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero > .hero-grid, .hud .coin, .hero-tagline::after, .boot-start.show, .hero h1.glitch { animation: none; }
+  .hero > .hero-grid, .boot-sprite .g-eye, .hud .coin, .hero-tagline::after, .boot-start.show, .hero h1.glitch { animation: none; }
   .js .reveal { opacity: 1; transform: none; }
   .px-icon { transition: none; }
 }
