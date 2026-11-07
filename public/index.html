@@ -1444,7 +1444,7 @@ html { max-width: 100%; }
   }, 130);
   var t2 = setInterval(function () {
     if (bi < blocks.length) { blocks[bi++].className = 'on'; pct.textContent = Math.round(bi * 5) + '%'; }
-    else { clearInterval(t2); start.classList.add('show'); setTimeout(finish, 800); }
+    else { clearInterval(t2); start.classList.add('show'); setTimeout(finish, 3000); }
   }, 85);
 
   skip.addEventListener('click', finish);
