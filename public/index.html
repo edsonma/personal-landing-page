@@ -805,7 +805,10 @@ html.booting .boot {
   background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 3px);
 }
 .boot-inner { width: min(560px, 90vw); position: relative; }
-.boot-log { min-height: 11.5em; white-space: pre-wrap; text-shadow: 0 0 6px rgba(77,232,255,0.6); }
+.boot-sprite { position: absolute; right: 0; top: 0; width: 54px; height: 54px; shape-rendering: crispEdges; }
+.boot-sprite .g-body { fill: var(--neon-pink); }
+.boot-sprite .g-eye { fill: var(--neon-cyan); }
+.boot-log { min-height: 15em; white-space: pre-wrap; text-shadow: 0 0 6px rgba(77,232,255,0.6); }
 .boot-log .hi { color: var(--neon-pink); }
 .boot-bar { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 14px 0 6px; border: 2px solid var(--neon-cyan); padding: 3px; }
 .boot-bar i { height: 16px; background: #1a1433; }
@@ -873,6 +876,7 @@ html { max-width: 100%; }
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-pick" viewBox="0 0 8 8"><path d="M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM6 2h2v1h-2zM5 3h1v1h-1zM7 3h1v1h-1zM4 4h1v1h-1zM7 4h1v1h-1zM3 5h1v1h-1zM2 6h1v1h-1zM1 7h1v1h-1z"/></symbol><symbol id="i-rock" viewBox="0 0 8 8"><path d="M3 1h2v1h-2zM2 2h4v1h-4zM1 3h6v1h-6zM0 4h8v1h-8zM0 5h8v1h-8zM1 6h6v1h-6z"/></symbol><symbol id="i-pin" viewBox="0 0 8 8"><path d="M2 0h4v1h-4zM1 1h6v1h-6zM1 2h2v1h-2zM5 2h2v1h-2zM1 3h2v1h-2zM5 3h2v1h-2zM1 4h6v1h-6zM2 5h4v1h-4zM3 6h2v1h-2zM4 7h1v1h-1z"/></symbol><symbol id="i-skull" viewBox="0 0 8 8"><path d="M1 0h6v1h-6zM0 1h8v1h-8zM0 2h1v1h-1zM2 2h4v1h-4zM7 2h1v1h-1zM0 3h1v1h-1zM2 3h4v1h-4zM7 3h1v1h-1zM0 4h8v1h-8zM1 5h2v1h-2zM5 5h2v1h-2zM1 6h6v1h-6zM1 7h1v1h-1zM3 7h2v1h-2zM6 7h1v1h-1z"/></symbol><symbol id="i-news" viewBox="0 0 8 8"><path d="M0 0h8v1h-8zM0 1h1v1h-1zM2 1h4v1h-4zM7 1h1v1h-1zM0 2h1v1h-1zM7 2h1v1h-1zM0 3h1v1h-1zM2 3h4v1h-4zM7 3h1v1h-1zM0 4h1v1h-1zM7 4h1v1h-1zM0 5h1v1h-1zM2 5h4v1h-4zM7 5h1v1h-1zM0 6h1v1h-1zM7 6h1v1h-1zM0 7h8v1h-8z"/></symbol><symbol id="i-wave" viewBox="0 0 8 8"><path d="M1 1h2v1h-2zM5 1h2v1h-2zM0 2h1v1h-1zM3 2h2v1h-2zM7 2h1v1h-1zM1 4h2v1h-2zM5 4h2v1h-2zM0 5h1v1h-1zM3 5h2v1h-2zM7 5h1v1h-1z"/></symbol><symbol id="i-palm" viewBox="0 0 8 8"><path d="M1 0h2v1h-2zM5 0h2v1h-2zM0 1h1v1h-1zM3 1h2v1h-2zM7 1h1v1h-1zM2 2h4v1h-4zM1 3h1v1h-1zM3 3h2v1h-2zM6 3h1v1h-1zM3 4h2v1h-2zM3 5h2v1h-2zM3 6h2v1h-2zM2 7h4v1h-4z"/></symbol><symbol id="i-yarn" viewBox="0 0 8 8"><path d="M2 0h4v1h-4zM1 1h1v1h-1zM3 1h2v1h-2zM6 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM5 2h1v1h-1zM7 2h1v1h-1zM0 3h2v1h-2zM3 3h2v1h-2zM6 3h2v1h-2zM0 4h1v1h-1zM2 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM1 5h1v1h-1zM3 5h2v1h-2zM6 5h1v1h-1zM2 6h4v1h-4zM6 7h2v1h-2z"/></symbol><symbol id="i-spray" viewBox="0 0 8 8"><path d="M0 0h1v1h-1zM3 0h2v1h-2zM3 1h2v1h-2zM0 2h1v1h-1zM2 2h4v1h-4zM2 3h4v1h-4zM0 4h1v1h-1zM2 4h4v1h-4zM2 5h4v1h-4zM2 6h4v1h-4zM2 7h4v1h-4z"/></symbol></svg>
 <div id="boot" class="boot" role="status" aria-label="Loading screen">
   <div class="boot-inner">
+    <svg class="boot-sprite" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="g-body" d="M5 0h2v1h-2zM5 1h2v1h-2zM2 2h8v1h-8zM0 3h12v1h-12zM2 4h8v1h-8zM0 5h12v1h-12zM2 6h8v1h-8zM0 7h12v1h-12zM2 8h8v1h-8zM2 9h8v1h-8zM3 10h2v1h-2zM7 10h2v1h-2zM3 11h2v1h-2zM7 11h2v1h-2z"/><path class="g-eye" d="M3 4h2v2h-2zM7 4h2v2h-2zM4 7h4v1h-4z"/></svg>
     <pre class="boot-log" id="bootLog"></pre>
     <div class="boot-bar" id="bootBar" aria-hidden="true"></div>
     <div class="boot-pct"><span id="bootPct">0%</span><span class="boot-start" id="bootStart">PRESS START</span></div>
@@ -1457,15 +1461,16 @@ html { max-width: 100%; }
   var lines = [
     'FreeBSD/amd64 loader', 'Booting /boot/kernel', '',
     'cpu0: Julia 1.10 .. OK', 'mem0: 640K ....... OK',
-    'http0: HTTP.jl .... OK', '', 'exec /usr/bin/portfolio'
+    'http0: HTTP.jl .... OK', '', 'exec /usr/bin/portfolio', ''
   ];
+  var LOGIN = 'edson';
   var blocks = [];
   for (var i = 0; i < 20; i++) { var b = document.createElement('i'); bar.appendChild(b); blocks.push(b); }
 
   var done = false, li = 0, bi = 0;
   function finish() {
     if (done) return; done = true;
-    clearInterval(t1); clearInterval(t2);
+    clearInterval(t1); clearInterval(t2); clearInterval(t3);
     document.removeEventListener('keydown', finish);
     boot.classList.add('off');
     setTimeout(function () {
@@ -1474,8 +1479,18 @@ html { max-width: 100%; }
       if (h1) h1.classList.add('glitch');
     }, 350);
   }
+  var t3;
   var t1 = setInterval(function () {
-    if (li < lines.length) { log.textContent += (li ? '\n' : '') + lines[li++]; } else { clearInterval(t1); }
+    if (li < lines.length) { log.textContent += (li ? '\n' : '') + lines[li++]; return; }
+    clearInterval(t1);
+    // type the login name one key at a time, then greet
+    log.textContent += '\nlogin: ';
+    var ci = 0;
+    t3 = setInterval(function () {
+      if (ci < LOGIN.length) { log.textContent += LOGIN.charAt(ci++); return; }
+      clearInterval(t3);
+      log.textContent += '\nWelcome to edsonma.cc';
+    }, 90);
   }, 130);
   var t2 = setInterval(function () {
     if (bi < blocks.length) { blocks[bi++].className = 'on'; pct.textContent = Math.round(bi * 5) + '%'; }
