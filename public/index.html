@@ -831,6 +831,7 @@ html.booting .boot {
   .js .reveal { opacity: 1; transform: none; }
   .px-icon { transition: none; }
 }
+@media (max-width: 420px) { html.booting .boot { font-size: 19px; } }
 @media print { body::after, .boot, .hero-sun, .hero-grid { display: none !important; } }
 
 /* ===== mobile fit: nothing may be wider than the screen ===== */
@@ -1453,9 +1454,9 @@ html { max-width: 100%; }
       pct = document.getElementById('bootPct'), start = document.getElementById('bootStart'),
       skip = document.getElementById('bootSkip'), h1 = document.querySelector('.hero h1');
   var lines = [
-    'EDSON_MA SYSTEM v1.0', '(C) 1986 BRASILIA MICRO', '',
-    'CPU .. JULIA 1.10 ...... OK', 'RAM .. 640K ............. OK',
-    'NET .. HTTP.JL ......... OK', '', 'LOADING PORTFOLIO.EXE'
+    'FreeBSD/amd64 loader', 'Booting /boot/kernel', '',
+    'cpu0: Julia 1.10 .. OK', 'mem0: 640K ....... OK',
+    'http0: HTTP.jl .... OK', '', 'exec /usr/bin/portfolio'
   ];
   var blocks = [];
   for (var i = 0; i < 20; i++) { var b = document.createElement('i'); bar.appendChild(b); blocks.push(b); }
