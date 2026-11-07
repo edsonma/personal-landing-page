@@ -844,6 +844,21 @@ html { max-width: 100%; }
   .project-card, .project-card h3, .project-card p { overflow-wrap: anywhere; }
   .contact-box { max-width: 100%; }
 }
+
+/* tiny architecture diagram on the CDC card */
+.arch { display: block; width: 100%; height: auto; padding: 8px; background: #09061a; border: 2px solid var(--card-border); shape-rendering: crispEdges; }
+.arch .a-box { fill: none; stroke-width: 2; }
+.arch .a-s-cy { stroke: var(--neon-cyan); } .arch .a-s-pk { stroke: var(--neon-pink); }
+.arch .a-s-am { stroke: var(--amber); }     .arch .a-s-pu { stroke: var(--purple-glow); }
+.arch .a-f-cy { fill: var(--neon-cyan); } .arch .a-f-pk { fill: var(--neon-pink); }
+.arch .a-f-am { fill: var(--amber); }     .arch .a-f-pu { fill: var(--purple-glow); }
+.arch .a-line { fill: var(--text-dim); }
+.arch .a-t { font-family: 'VT323', monospace; font-size: 12px; fill: var(--text-main); }
+.arch .a-sub { font-family: 'VT323', monospace; font-size: 11px; fill: var(--text-dim); }
+.arch .a-pkt { fill: var(--neon-pink); animation: pkt 1.2s steps(5) infinite; }
+.arch .a-d1 { animation-delay: 0.4s; } .arch .a-d2 { animation-delay: 0.8s; }
+@keyframes pkt { 0% { transform: translateX(0); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(14px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .arch .a-pkt { animation: none; opacity: 0; } }
 </style>
 </head>
 <body>
@@ -1196,6 +1211,7 @@ html { max-width: 100%; }
         <div class="project-meta"><span>Node.js</span><span>Vue</span><span>Three.js</span></div>
       </div>
       <a class="project-card" href="https://github.com/edsonma/demo_cdc_postgresql-debezium-rabbitmq-kibaetl" target="_blank" rel="noopener noreferrer">
+        <svg class="arch" viewBox="-10 0 300 82" role="img" aria-label="Change data capture flow: PostgreSQL to Debezium to RabbitMQ to KibaETL" focusable="false"><rect class="a-box a-s-cy" x="1" y="9" width="50" height="34"/><rect class="a-f-cy" x="16" y="15" width="20" height="5"/><rect class="a-f-cy" x="16" y="23" width="20" height="5"/><rect class="a-f-cy" x="16" y="31" width="20" height="5"/><text class="a-t" x="26" y="61" text-anchor="middle">Postgres</text><text class="a-sub" x="26" y="75" text-anchor="middle">source</text><rect class="a-box a-s-pk" x="77" y="9" width="50" height="34"/><polygon class="a-f-pk" points="105,13 93,27 101,27 98,39 111,23 103,23"/><text class="a-t" x="102" y="61" text-anchor="middle">Debezium</text><text class="a-sub" x="102" y="75" text-anchor="middle">capture</text><rect class="a-box a-s-am" x="153" y="9" width="50" height="34"/><rect class="a-f-am" x="164" y="22" width="8" height="10"/><rect class="a-f-am" x="174" y="22" width="8" height="10"/><rect class="a-f-pk" x="184" y="22" width="8" height="10"/><text class="a-t" x="178" y="61" text-anchor="middle">RabbitMQ</text><text class="a-sub" x="178" y="75" text-anchor="middle">broker</text><rect class="a-box a-s-pu" x="229" y="9" width="50" height="34"/><rect class="a-f-pu" x="240" y="13" width="7" height="7"/><rect class="a-f-pu" x="240" y="23" width="7" height="7"/><rect class="a-f-pu" x="240" y="33" width="7" height="7"/><rect class="a-f-pu" x="250" y="13" width="7" height="7"/><rect class="a-f-pu" x="250" y="33" width="7" height="7"/><rect class="a-f-pu" x="260" y="13" width="7" height="7"/><rect class="a-f-pu" x="260" y="23" width="7" height="7"/><rect class="a-f-pu" x="260" y="33" width="7" height="7"/><text class="a-t" x="254" y="61" text-anchor="middle">KibaETL</text><text class="a-sub" x="254" y="75" text-anchor="middle">sink</text><rect class="a-line" x="55" y="25" width="14" height="2"/><polygon class="a-line" points="68,21 74,26 68,31"/><rect class="a-pkt a-d0" x="55" y="23" width="4" height="6"/><rect class="a-line" x="131" y="25" width="14" height="2"/><polygon class="a-line" points="144,21 150,26 144,31"/><rect class="a-pkt a-d1" x="131" y="23" width="4" height="6"/><rect class="a-line" x="207" y="25" width="14" height="2"/><polygon class="a-line" points="220,21 226,26 220,31"/><rect class="a-pkt a-d2" x="207" y="23" width="4" height="6"/></svg>
         <h3>CDC: Postgres → Debezium → RabbitMQ → KibaETL</h3>
         <p>Working demo wiring PostgreSQL, Debezium, RabbitMQ and KibaETL together for change data capture.</p>
         <div class="project-meta"><span>Ruby</span></div>
