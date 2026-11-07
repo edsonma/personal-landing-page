@@ -15,7 +15,12 @@
 <meta property="og:url" content="https://edsonma.cc/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&family=VT323&display=swap">
+<script>
+(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('crt')==='off')d.classList.add('no-crt')}catch(e){}
+try{var force=/[?&]boot\b/.test(location.search);if(!force&&(sessionStorage.getItem('booted')||matchMedia('(prefers-reduced-motion: reduce)').matches))return}catch(e){return}
+d.classList.add('booting')})();
+</script>
 <style>
 @font-face {
   font-family: 'PixelFont';
@@ -656,9 +661,189 @@ footer .surname { color: var(--purple-glow); }
   html { scroll-behavior: auto; }
   .btn, .project-card { transition: none; }
 }
+
+/* ===== 80s arcade layer ===== */
+:root {
+  --neon-pink: #ff4fa3;
+  --neon-cyan: #4de8ff;
+  --amber: #ffb454;
+}
+
+/* pixel icons (replace emoji in card titles) */
+.px-icon {
+  width: 1.25em; height: 1.25em;
+  margin-left: 6px;
+  vertical-align: -0.2em;
+  fill: var(--neon-cyan);
+  shape-rendering: crispEdges;
+  transition: fill 0.15s steps(2);
+}
+.project-card:hover .px-icon, .project-card:focus-visible .px-icon { fill: var(--neon-pink); }
+
+/* level counters: LVL 01, LVL 02 ... above each section title */
+main { counter-reset: lvl; }
+.section-title::before {
+  counter-increment: lvl;
+  content: "LVL " counter(lvl, decimal-leading-zero);
+  display: block;
+  margin-bottom: 12px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  text-shadow: none;
+}
+
+/* neon title with chromatic offset */
+.hero h1 {
+  text-shadow:
+    -2px 0 0 var(--neon-cyan),
+    2px 0 0 var(--neon-pink),
+    5px 5px 0 var(--purple-2),
+    0 0 40px rgba(124,92,255,0.4);
+}
+.hero h1.glitch { animation: glitch 0.45s steps(2, end) 1; }
+@keyframes glitch {
+  0%   { transform: translate(0); }
+  20%  { transform: translate(-4px, 1px) skewX(6deg); }
+  40%  { transform: translate(4px, -1px) skewX(-6deg); }
+  60%  { transform: translate(-2px, 0); clip-path: inset(30% 0 40% 0); }
+  80%  { transform: translate(2px, 0); clip-path: none; }
+  100% { transform: translate(0); }
+}
+
+.hero-tagline::after {
+  content: "";
+  display: inline-block;
+  width: 0.6em; height: 1em;
+  margin-left: 6px;
+  vertical-align: -0.15em;
+  background: var(--neon-pink);
+  animation: cursor 1s steps(1) infinite;
+}
+@keyframes cursor { 50% { opacity: 0; } }
+
+/* synthwave sun + perspective grid under the hero */
+.hero > .hero-sun {
+  position: absolute; z-index: 0;
+  left: 50%; bottom: 70px;
+  width: min(440px, 72vw); aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--amber) 0%, var(--neon-pink) 55%, var(--purple-1) 100%);
+  opacity: 0.15;
+  -webkit-mask: linear-gradient(#000, #000) top / 100% 50% no-repeat,
+                repeating-linear-gradient(180deg, #000 0 11px, transparent 11px 17px) bottom / 100% 50% no-repeat;
+          mask: linear-gradient(#000, #000) top / 100% 50% no-repeat,
+                repeating-linear-gradient(180deg, #000 0 11px, transparent 11px 17px) bottom / 100% 50% no-repeat;
+}
+.hero > .hero-grid {
+  position: absolute; z-index: 0;
+  left: -60%; right: -60%; bottom: 0; height: 42%;
+  background:
+    repeating-linear-gradient(90deg, rgba(77,232,255,0.5) 0 2px, transparent 2px 64px),
+    repeating-linear-gradient(0deg, rgba(255,79,163,0.5) 0 2px, transparent 2px 40px);
+  transform: perspective(260px) rotateX(64deg);
+  transform-origin: bottom;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 95%);
+          mask-image: linear-gradient(to top, #000 10%, transparent 95%);
+  animation: grid-move 1.4s linear infinite;
+}
+@keyframes grid-move { to { background-position: 0 0, 0 40px; } }
+
+/* arcade HUD strip */
+.hud {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  max-width: 1100px; margin: 0 auto; padding: 12px 24px;
+  font-family: 'VT323', monospace; font-size: 20px; letter-spacing: 1px;
+  color: var(--text-dim);
+  border-top: 2px solid var(--card-border);
+}
+.hud b { color: var(--amber); font-weight: normal; }
+.hud .coin { color: var(--neon-pink); animation: blink 1.2s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* card accents cycle through the neon palette */
+.project-card:nth-child(3n+1):hover, .project-card:nth-child(3n+1):focus-visible { border-color: var(--neon-pink); box-shadow: 0 0 16px rgba(255,79,163,0.3); }
+.project-card:nth-child(3n+2):hover, .project-card:nth-child(3n+2):focus-visible { border-color: var(--neon-cyan); box-shadow: 0 0 16px rgba(77,232,255,0.3); }
+.project-card:nth-child(3n):hover, .project-card:nth-child(3n):focus-visible { border-color: var(--amber); box-shadow: 0 0 16px rgba(255,180,84,0.3); }
+
+/* CRT scanlines + vignette (can be switched off in the footer) */
+body::after {
+  content: "";
+  position: fixed; inset: 0; z-index: 900;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.13) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 62%, rgba(0,0,0,0.4) 100%);
+}
+.no-crt body::after { display: none; }
+.crt-toggle {
+  margin-top: 14px;
+  font-family: 'VT323', monospace; font-size: 18px; letter-spacing: 1px;
+  color: var(--text-dim); background: transparent;
+  border: 2px solid var(--card-border); padding: 4px 12px; cursor: pointer;
+}
+.crt-toggle:hover, .crt-toggle:focus-visible { color: var(--neon-cyan); border-color: var(--neon-cyan); }
+
+/* stepped (8-bit) scroll reveal */
+.js .reveal { opacity: 0; transform: translateY(12px); }
+.js .reveal.in { opacity: 1; transform: none; transition: opacity 0.3s steps(4), transform 0.3s steps(4); }
+
+/* ===== boot screen ===== */
+.boot { display: none; }
+html.booting .boot {
+  display: flex; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 1000;
+  background: #000;
+  font-family: 'VT323', monospace; font-size: 22px; line-height: 1.25;
+  color: var(--neon-cyan);
+  /* failsafe: if the script never runs, the overlay removes itself */
+  animation: boot-failsafe 0s linear 7s forwards;
+}
+.boot::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 3px);
+}
+.boot-inner { width: min(560px, 90vw); position: relative; }
+.boot-log { min-height: 11.5em; white-space: pre-wrap; text-shadow: 0 0 6px rgba(77,232,255,0.6); }
+.boot-log .hi { color: var(--neon-pink); }
+.boot-bar { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 14px 0 6px; border: 2px solid var(--neon-cyan); padding: 3px; }
+.boot-bar i { height: 16px; background: #1a1433; }
+.boot-bar i.on { background: var(--neon-pink); box-shadow: 0 0 6px var(--neon-pink); }
+.boot-pct { display: flex; justify-content: space-between; color: var(--amber); }
+.boot-start { color: var(--amber); visibility: hidden; }
+.boot-start.show { visibility: visible; animation: blink 0.8s steps(1) infinite; }
+.boot-skip {
+  margin-top: 18px; font-family: inherit; font-size: 18px; letter-spacing: 1px;
+  color: var(--text-dim); background: transparent; border: 2px solid #3a2f6b; padding: 4px 12px; cursor: pointer;
+}
+.boot-skip:hover, .boot-skip:focus-visible { color: var(--neon-cyan); border-color: var(--neon-cyan); }
+.boot.off { animation: crt-off 0.35s steps(6) forwards; }
+@keyframes crt-off {
+  0% { transform: scaleY(1); filter: brightness(1); }
+  60% { transform: scaleY(0.02); filter: brightness(3); }
+  100% { transform: scaleY(0.02) scaleX(0); opacity: 0; }
+}
+@keyframes boot-failsafe { to { visibility: hidden; pointer-events: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero > .hero-grid, .hud .coin, .hero-tagline::after, .boot-start.show, .hero h1.glitch { animation: none; }
+  .js .reveal { opacity: 1; transform: none; }
+  .px-icon { transition: none; }
+}
+@media print { body::after, .boot, .hero-sun, .hero-grid { display: none !important; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-pick" viewBox="0 0 8 8"><path d="M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM6 2h2v1h-2zM5 3h1v1h-1zM7 3h1v1h-1zM4 4h1v1h-1zM7 4h1v1h-1zM3 5h1v1h-1zM2 6h1v1h-1zM1 7h1v1h-1z"/></symbol><symbol id="i-rock" viewBox="0 0 8 8"><path d="M3 1h2v1h-2zM2 2h4v1h-4zM1 3h6v1h-6zM0 4h8v1h-8zM0 5h8v1h-8zM1 6h6v1h-6z"/></symbol><symbol id="i-pin" viewBox="0 0 8 8"><path d="M2 0h4v1h-4zM1 1h6v1h-6zM1 2h2v1h-2zM5 2h2v1h-2zM1 3h2v1h-2zM5 3h2v1h-2zM1 4h6v1h-6zM2 5h4v1h-4zM3 6h2v1h-2zM4 7h1v1h-1z"/></symbol><symbol id="i-skull" viewBox="0 0 8 8"><path d="M1 0h6v1h-6zM0 1h8v1h-8zM0 2h1v1h-1zM2 2h4v1h-4zM7 2h1v1h-1zM0 3h1v1h-1zM2 3h4v1h-4zM7 3h1v1h-1zM0 4h8v1h-8zM1 5h2v1h-2zM5 5h2v1h-2zM1 6h6v1h-6zM1 7h1v1h-1zM3 7h2v1h-2zM6 7h1v1h-1z"/></symbol><symbol id="i-news" viewBox="0 0 8 8"><path d="M0 0h8v1h-8zM0 1h1v1h-1zM2 1h4v1h-4zM7 1h1v1h-1zM0 2h1v1h-1zM7 2h1v1h-1zM0 3h1v1h-1zM2 3h4v1h-4zM7 3h1v1h-1zM0 4h1v1h-1zM7 4h1v1h-1zM0 5h1v1h-1zM2 5h4v1h-4zM7 5h1v1h-1zM0 6h1v1h-1zM7 6h1v1h-1zM0 7h8v1h-8z"/></symbol><symbol id="i-wave" viewBox="0 0 8 8"><path d="M1 1h2v1h-2zM5 1h2v1h-2zM0 2h1v1h-1zM3 2h2v1h-2zM7 2h1v1h-1zM1 4h2v1h-2zM5 4h2v1h-2zM0 5h1v1h-1zM3 5h2v1h-2zM7 5h1v1h-1z"/></symbol><symbol id="i-palm" viewBox="0 0 8 8"><path d="M1 0h2v1h-2zM5 0h2v1h-2zM0 1h1v1h-1zM3 1h2v1h-2zM7 1h1v1h-1zM2 2h4v1h-4zM1 3h1v1h-1zM3 3h2v1h-2zM6 3h1v1h-1zM3 4h2v1h-2zM3 5h2v1h-2zM3 6h2v1h-2zM2 7h4v1h-4z"/></symbol><symbol id="i-yarn" viewBox="0 0 8 8"><path d="M2 0h4v1h-4zM1 1h1v1h-1zM3 1h2v1h-2zM6 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM5 2h1v1h-1zM7 2h1v1h-1zM0 3h2v1h-2zM3 3h2v1h-2zM6 3h2v1h-2zM0 4h1v1h-1zM2 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM1 5h1v1h-1zM3 5h2v1h-2zM6 5h1v1h-1zM2 6h4v1h-4zM6 7h2v1h-2z"/></symbol></svg>
+<div id="boot" class="boot" role="status" aria-label="Loading screen">
+  <div class="boot-inner">
+    <pre class="boot-log" id="bootLog"></pre>
+    <div class="boot-bar" id="bootBar" aria-hidden="true"></div>
+    <div class="boot-pct"><span id="bootPct">0%</span><span class="boot-start" id="bootStart">PRESS START</span></div>
+    <button type="button" class="boot-skip" id="bootSkip">SKIP &gt;&gt;</button>
+  </div>
+</div>
 <div class="stars"></div>
 <div class="bg-overlay"></div>
 
@@ -711,6 +896,8 @@ footer .surname { color: var(--purple-glow); }
       <circle cx="550" cy="330" r="44" fill="#7c5cff" opacity="0.15"/>
       <rect x="0" y="540" width="1100" height="20" fill="#0a0620"/>
     </svg>
+    <div class="hero-sun" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
     <div class="hero-eyebrow">SENIOR SOFTWARE ENGINEER · BRASÍLIA, BRAZIL</div>
     <h1>EDSON MA</h1>
     <div class="graph-card graph-card-wide">
@@ -881,6 +1068,12 @@ footer .surname { color: var(--purple-glow); }
     </div>
   </section>
 
+  <div class="hud" aria-hidden="true">
+    <span>1UP <b>000000</b></span>
+    <span>HI-SCORE <b>RAILS · JULIA · RUST</b></span>
+    <span class="coin">INSERT COIN</span>
+  </div>
+
   <section id="about">
     <div class="section-title">About</div>
     <p class="section-desc">Who I am and what I've been building.</p>
@@ -941,46 +1134,46 @@ footer .surname { color: var(--purple-glow); }
     <p class="section-desc">A few things pinned on GitHub.</p>
     <div class="projects-grid">
       <a class="project-card" href="https://laele-cli-production.up.railway.app" target="_blank" rel="noopener noreferrer">
-        <h3>laele-cli 🌴</h3>
+        <h3>laele-cli <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-palm"/></svg></h3>
         <p>A bash wrapper that sprinkles Salvador/Bahia slang into your terminal output — plus a browser version with a fake in-terminal shell.</p>
         <div class="project-meta"><span>Go</span></div>
       </a>
       <a class="project-card" href="https://minecraft-survey-production.up.railway.app/" target="_blank" rel="noopener noreferrer">
         <img class="project-thumb" src="/img/pendangamine.jpg" width="360" height="202" alt="Cherry-blossom pagoda in the Pendanga Minecraft world, rendered by PendangaMine" loading="lazy">
-        <h3>PendangaMine ⛏️</h3>
+        <h3>PendangaMine <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-pick"/></svg></h3>
         <p>A web viewer that renders the Minecraft Bedrock world "Pendanga" straight from the real world geometry, in real time, at any coordinates, from the cherry-blossom pagoda to the farthest chunk. Switch between Classic and Beautiful graphics modes (shaded sunlight, soft lighting), save up to 50 places, share them on WhatsApp, and watch animated mobs that follow basic Minecraft rules.</p>
         <div class="project-meta"><span>Web</span></div>
       </a>
       <div class="project-card">
-        <h3>Crocher Compiler 🧶</h3>
+        <h3>Crocher Compiler <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-yarn"/></svg></h3>
         <p>A DSL for writing crochet patterns as plain text, inspired by Lilypond and Mermaid. The text compiles into a standard symbol chart, then into a 3D model of the finished piece. Planned stack: Ruby for the language and parser, TypeScript with Three.js for rendering.</p>
         <div class="project-meta"><span>Ruby</span><span>TypeScript</span></div>
       </div>
       <div class="project-card">
         <img class="project-thumb" src="/img/capinada.jpg" width="360" height="202" alt="CapiNada logo: a capybara with sunglasses swimming in front of the Brasília bridge, surrounded by an AI and data pipeline diagram" loading="lazy">
-        <h3>CapiNada Responde 🏊</h3>
+        <h3>CapiNada Responde <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-wave"/></svg></h3>
         <p>A sports-events app for Brazil covering triathlon, aquathlon, swimming and running, with a RAG assistant that answers questions about events. It stores its own downloadable copies of result PDFs and uses the Capivaras do Lago brand (capybara mascot, Bricolage Grotesque and Hanken Grotesk fonts). Built on a Rails API and Expo — web, iOS and Android from one codebase — hosted on Railway.</p>
         <div class="project-meta"><span>Rails</span><span>Expo</span></div>
       </div>
       <div class="project-card">
         <img class="project-thumb" src="/img/capi-news.jpg" width="360" height="202" alt="Capivaras do Lago visual identity: logo, color palette, typography and components for the Capi News blog" loading="lazy">
-        <h3>Capi News 📰</h3>
+        <h3>Capi News <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-news"/></svg></h3>
         <p>Turns a group chat into a blog. Upload the exported conversation and it groups the messages into events (trainings, meetups, races), then asks Claude to write a short post for each one, plus a weekly summary of who took part. Drafts stick to what was said in the chat, phone numbers never reach the AI, the public site shows first names only, and photos are resized with location data stripped. Nothing goes online on its own: an admin approves, edits, regenerates or discards each draft. Re-uploads don't duplicate messages, and posts can also be written by hand in Markdown.</p>
         <div class="project-meta"><span>Claude</span></div>
       </div>
       <div class="project-card">
-        <h3>Outcrops Odyssey 🪨</h3>
+        <h3>Outcrops Odyssey <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-rock"/></svg></h3>
         <p>An open-world game where you play a field geologist exploring an endless, procedurally generated landscape. Each day you take the truck to a drop point, break rock outcrops for points, XP and collectible cards, and must get back to a road before sunset or it's game over. Built in Rust (ported from DragonRuby), it runs on desktop and in the browser, with mobile touch controls.</p>
         <div class="project-meta"><span>Rust</span></div>
       </div>
       <div class="project-card">
-        <h3>Outcrop Explorer 🗺️</h3>
+        <h3>Outcrop Explorer <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></h3>
         <p>A map app for field geologists to save GPS paths to outcrops and points of interest, with each path paired with a walkthrough video of the route (MVP). Projects can be private or public, videos are served via S3 presigned URLs, and share links give access to a location. Accounts use email-confirmed signup with optional 2FA. Built with a Rails backend, a Flutter mobile app and a Google-Maps-style landing page using Stimulus, starting with a GPX importer, then share links, then the UI, with seed data near Chapada dos Veadeiros, Brazil.</p>
         <div class="project-meta"><span>Rails</span><span>Flutter</span></div>
       </div>
       <div class="project-card">
         <img class="project-thumb wide" src="/img/minecraft-doom.jpg" width="420" height="194" alt="Concept art: Doom II style shooter inside Minecraft worlds, with a Doom HUD, shotgun, Cacodemon and Minecraft players" loading="lazy">
-        <h3>Minecraft × Doom II 👹</h3>
+        <h3>Minecraft × Doom II <svg class="px-icon" aria-hidden="true" focusable="false"><use href="#i-skull"/></svg></h3>
         <p>Planned: a first-person shooter that drops the Doom II engine feel into real Minecraft maps. Load a Bedrock world, such as the Pendanga cherry pagoda, and fight through it under a blood-red sky with the classic HUD (health, armor, ammo, weapon slots), a shotgun and demons like the Cacodemon, while Minecraft players fight alongside you. Concept art for now, with the map-loading side building on PendangaMine.</p>
         <div class="project-meta"><span>Planned</span></div>
       </div>
@@ -1096,6 +1289,7 @@ footer .surname { color: var(--purple-glow); }
 
 <footer>
   made by <span class="surname">马</span> edson ma · brasília, brazil
+  <div><button type="button" class="crt-toggle" id="crtToggle" aria-pressed="true">CRT FX: ON</button></div>
   <div class="footer-stack">powered by <strong>Julia Lang</strong> &amp; <strong>HTTP.jl</strong></div>
 </footer>
 <script>
@@ -1178,6 +1372,73 @@ footer .surname { color: var(--purple-glow); }
   });
 
   svg.addEventListener('mouseleave', deactivate);
+})();
+</script>
+<script>
+(function () {
+  var d = document.documentElement;
+
+  // CRT toggle
+  var tg = document.getElementById('crtToggle');
+  function paint() { var off = d.classList.contains('no-crt'); tg.textContent = 'CRT FX: ' + (off ? 'OFF' : 'ON'); tg.setAttribute('aria-pressed', off ? 'false' : 'true'); }
+  if (tg) { paint(); tg.addEventListener('click', function () {
+    d.classList.toggle('no-crt'); paint();
+    try { localStorage.setItem('crt', d.classList.contains('no-crt') ? 'off' : 'on'); } catch (e) {}
+  }); }
+
+  // stepped reveal on scroll (cards and section titles)
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target; io.unobserve(el); el.classList.add('in');
+        // drop the helper classes afterwards so hover transforms keep working
+        setTimeout(function () { el.classList.remove('reveal', 'in'); }, 500);
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.project-card, .section-title').forEach(function (el) { el.classList.add('reveal'); io.observe(el); });
+  }
+
+  // vintage boot screen
+  var boot = document.getElementById('boot');
+  if (!boot) return;
+  if (!d.classList.contains('booting')) { boot.remove(); return; }
+
+  var log = document.getElementById('bootLog'), bar = document.getElementById('bootBar'),
+      pct = document.getElementById('bootPct'), start = document.getElementById('bootStart'),
+      skip = document.getElementById('bootSkip'), h1 = document.querySelector('.hero h1');
+  var lines = [
+    'EDSON_MA SYSTEM v1.0', '(C) 1986 BRASILIA MICRO', '',
+    'CPU .. JULIA 1.10 ...... OK', 'RAM .. 640K ............. OK',
+    'NET .. HTTP.JL ......... OK', '', 'LOADING PORTFOLIO.EXE'
+  ];
+  var blocks = [];
+  for (var i = 0; i < 20; i++) { var b = document.createElement('i'); bar.appendChild(b); blocks.push(b); }
+
+  var done = false, li = 0, bi = 0;
+  function finish() {
+    if (done) return; done = true;
+    clearInterval(t1); clearInterval(t2);
+    document.removeEventListener('keydown', finish);
+    boot.classList.add('off');
+    setTimeout(function () {
+      boot.remove(); d.classList.remove('booting');
+      try { sessionStorage.setItem('booted', '1'); } catch (e) {}
+      if (h1) h1.classList.add('glitch');
+    }, 350);
+  }
+  var t1 = setInterval(function () {
+    if (li < lines.length) { log.textContent += (li ? '\n' : '') + lines[li++]; } else { clearInterval(t1); }
+  }, 130);
+  var t2 = setInterval(function () {
+    if (bi < blocks.length) { blocks[bi++].className = 'on'; pct.textContent = Math.round(bi * 5) + '%'; }
+    else { clearInterval(t2); start.classList.add('show'); setTimeout(finish, 800); }
+  }, 85);
+
+  skip.addEventListener('click', finish);
+  boot.addEventListener('pointerdown', finish);
+  document.addEventListener('keydown', finish);
+  skip.focus();
 })();
 </script>
 </body>
